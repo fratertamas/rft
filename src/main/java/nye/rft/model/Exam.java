@@ -46,4 +46,8 @@ public class Exam {
     public int getMaxStudents() {
         return maxStudents;
     }
+
+    public List<User> getRegisteredStudents() {
+        return registeredStudents;
+    }
 }

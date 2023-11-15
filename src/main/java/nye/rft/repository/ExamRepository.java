@@ -16,4 +16,13 @@ public class ExamRepository {
     public List<Exam> getAllExams() {
         return exams;
     }
+
+    public Exam findExamById(String examId) {
+        for (Exam exam : exams) {
+            if (exam.getId().equals(examId)) {
+                return exam;
+            }
+        }
+        return null;
+    }
 }

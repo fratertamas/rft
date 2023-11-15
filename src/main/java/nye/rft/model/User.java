@@ -11,6 +11,9 @@ public class User {
     }
 
     public User(String id, String name, UserRole role) {
+        if (id == null || name == null || role == null) {
+            throw new IllegalArgumentException("id, name, and role must not be null");
+        }
         this.id = id;
         this.name = name;
         this.role = role;

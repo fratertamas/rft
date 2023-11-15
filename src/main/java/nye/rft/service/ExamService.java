@@ -3,9 +3,11 @@ package nye.rft.service;
 import nye.rft.model.Exam;
 import nye.rft.model.User;
 import nye.rft.repository.ExamRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class ExamService {
     private ExamRepository examRepository;
 

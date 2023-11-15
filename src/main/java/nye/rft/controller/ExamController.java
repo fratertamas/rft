@@ -1,6 +1,7 @@
 package nye.rft.controller;
 
 import nye.rft.model.Exam;
+import nye.rft.model.User;
 import nye.rft.service.ExamService;
 
 public class ExamController {
@@ -12,5 +13,9 @@ public class ExamController {
 
     public void createExam(Exam exam) {
         examService.createExam(exam);
+    }
+
+    public void registerStudentForExam(String examId, User user) {
+        examService.registerStudentForExam(examId, user);
     }
 }

@@ -1,6 +1,7 @@
 package nye.rft.service;
 
 import nye.rft.model.Exam;
+import nye.rft.model.User;
 import nye.rft.repository.ExamRepository;
 
 import java.util.List;
@@ -18,5 +19,16 @@ public class ExamService {
 
     public List<Exam> getAllExams() {
         return examRepository.getAllExams();
+    }
+
+    public void registerStudentForExam(String examId, User user) {
+        Exam exam = examRepository.findExamById(examId);
+
+        if (exam != null) {
+            exam.registerStudent(user);
+            examRepository.saveExam(exam);
+        } else {
+            throw new IllegalArgumentException("The exam with the specified identifier could not be found.");
+        }
     }
 }

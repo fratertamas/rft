@@ -1,4 +1,4 @@
-package service;
+package nye.rft.service;
 
 public class ExamService {
 }

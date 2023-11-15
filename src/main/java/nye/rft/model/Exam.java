@@ -52,6 +52,18 @@ public class Exam {
         return registeredStudents;
     }
 
+    public void registerStudent(User user) {
+        if (user.getRole() == UserRole.STUDENT) {
+            if (registeredStudents.size() < maxStudents) {
+                registeredStudents.add(user);
+            } else {
+                throw new IllegalStateException("The exam is full, no more students can register.");
+            }
+        } else {
+            throw new IllegalArgumentException("Only students can register for the exam.");
+        }
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

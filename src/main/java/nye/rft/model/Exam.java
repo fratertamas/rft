@@ -22,4 +22,28 @@ public class Exam {
         this.maxStudents = maxStudents;
         this.registeredStudents = new ArrayList<>();
     }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getCourse() {
+        return course;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public int getMaxStudents() {
+        return maxStudents;
+    }
 }

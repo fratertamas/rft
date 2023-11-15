@@ -3,6 +3,7 @@ package nye.rft.model;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 public class Exam {
     private String id;
@@ -49,5 +50,23 @@ public class Exam {
 
     public List<User> getRegisteredStudents() {
         return registeredStudents;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Exam exam = (Exam) o;
+        return maxStudents  == exam.maxStudents  &&
+                Objects.equals(id, exam.id) &&
+                Objects.equals(date, exam.date) &&
+                Objects.equals(course, exam.course) &&
+                Objects.equals(location, exam.location) &&
+                Objects.equals(user, exam.user);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(date, course, location, user, maxStudents);
     }
 }

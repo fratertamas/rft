@@ -1,10 +1,12 @@
 package nye.rft.repository;
 
 import nye.rft.model.Exam;
+import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Repository
 public class ExamRepository {
 
     private List<Exam> exams = new ArrayList<>();

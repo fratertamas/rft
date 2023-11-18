@@ -28,7 +28,6 @@ public class ExamService {
 
         if (exam != null) {
             exam.registerStudent(user);
-            examRepository.saveExam(exam);
         } else {
             throw new IllegalArgumentException("The exam with the specified identifier could not be found.");
         }

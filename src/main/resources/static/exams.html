@@ -1,10 +1,97 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>RFT-Neptun-Exams</title>
-</head>
-<body>
+    <head>
+        <meta charset="UTF-8">
+        <title>RFT-Neptun-Exams</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+        <script src="js/jquery.min.js"></script>
+        <script src="js/popper.min.js"></script>
+        <script src="js/bootstrap.min.js"></script>
+        <link href="css/style.css" rel="stylesheet" />
+        <link href="css/menu.css" rel="stylesheet" />
+    </head>
+    <body>
+        <div class="keret">
+            <!--Menü kezdete-->
+            <nav class="navigacio">
+                <ul>
+                    <li>
+                        <a href="index.html">Kezdőlap</a>
+                    </li>
+                    <li>
+                        <a href="">Vizsgák</a>
 
-</body>
+                        <ul class="almenu sub-menu">
+                            <li>
+                                <a href="exams.html">Megtekintés</a>
+                            </li>
+                            <li>
+                                <a href="createexam.html">Létrehozás</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="utolso">
+                        <a href="registerstudent.html">Vizsgára jelentkezés</a>
+                    </li>
+                </ul>
+            </nav>
+            <!--Menü vége-->
+        </div>
+        <div>
+            <h4 style="text-align: center;">Vizsgák megtekintése</h4>
+
+            <table id="json-container" class="table table-hover szegelymentes">
+                <thead>
+                <tr>
+                    <th>Vizsga kód</th>
+                    <th>Dátum</th>
+                    <th>Kurzus neve</th>
+                    <th>Helyszín</th>
+                    <th>Vizsgáztató ID</th>
+                    <th>Vizsgáztató neve</th>
+                    <th>Vizsgáztató beosztása</th>
+                    <th>Vizsga létszáma</th>
+                    <th>Regisztrált hallgatók</th>
+                </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+
+            <script>
+                // A szerver URL-je
+                var apiUrl = 'http://localhost:8080/exams';
+
+                // Fetch API segítségével lekérjük a JSON adatot
+                fetch(apiUrl)
+                    .then(response => response.json())
+                    .then(jsonData => {
+                        // JSON adatot megkapva, megjelenítjük a táblázatban
+                        var tableBody = document.querySelector("#json-container tbody");
+
+                        jsonData.forEach(exam => {
+                            var row = document.createElement("tr");
+                            row.innerHTML = `
+                                <td>${exam.id}</td>
+                                <td>${exam.date}</td>
+                                <td>${exam.course}</td>
+                                <td>${exam.location}</td>
+                                <td>${exam.user.id}</td>
+                                <td>${exam.user.name}</td>
+                                <td>${exam.user.role}</td>
+                                <td>${exam.maxStudents}</td>
+                                <td>${getRegisteredStudents(exam.registeredStudents)}</td>
+                            `;
+                            tableBody.appendChild(row);
+                        });
+                    })
+                    .catch(error => console.error('Hiba történt:', error));
+
+                    function getRegisteredStudents(students) {
+                    return students.map(student => `${student.id} - ${student.name}`).join('<br>');
+                }
+            </script>
+        </div>
+    </body>
 </html>

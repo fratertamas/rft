@@ -15,3 +15,5 @@ jobs:
           distribution: 'adopt'
       - name: compile with maven
         run: mvn compile
+      - name: Run tests
+        run: mvn test

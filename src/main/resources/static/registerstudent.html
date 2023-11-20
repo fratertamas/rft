@@ -1,10 +1,137 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>RFT-Neptun-Register student</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <script src="js/jquery.min.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <link href="css/style.css" rel="stylesheet" />
+    <link href="css/menu.css" rel="stylesheet" />
 </head>
-<body>
 
+<body>
+<div class="keret">
+    <!-- Menü kezdete -->
+    <nav class="navigacio">
+        <ul>
+            <li>
+                <a href="index.html">Kezdőlap</a>
+            </li>
+            <li>
+                <a href="">Vizsgák</a>
+                <ul class="almenu sub-menu">
+                    <li>
+                        <a href="exams.html">Megtekintés</a>
+                    </li>
+                    <li>
+                        <a href="createexam.html">Létrehozás</a>
+                    </li>
+                </ul>
+            </li>
+            <li class="utolso">
+                <a href="registerstudent.html">Vizsgára jelentkezés</a>
+            </li>
+        </ul>
+    </nav>
+    <!-- Menü vége -->
+</div>
+
+<!-- Űrlap a diák adatainak és vizsgaválasztásnak -->
+<div>
+    <h4 style="text-align:center">Vizsgára jelentkezés</h4>
+    <form id="registration-form">
+        <table style="width:80%; margin: auto;">
+            <tr>
+                <td style="vertical-align: top; margin: auto;">
+                    <fieldset>
+                        <div class="form-group row">
+                            <label for="student-id" class="col-4 col-form-label">Neptunkód:</label>
+                            <div class="col-7">
+                                <input type="text" id="student-id" name="student-id" placeholder="Neptunkód" class="form-control here" required><br>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="student-name" class="col-4 col-form-label">Hallgató Neve:</label>
+                            <div class="col-7">
+                                <input type="text" id="student-name" name="student-name" placeholder="Név" class="form-control here" required><br>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="exam-selection" class="col-4 col-form-label">Vizsga kiválasztása:</label>
+                            <div class="col-7">
+                                <select id="exam-selection" name="exam-selection" class="custom-select" required>
+                                    <!-- Vizsga adatokat itt kell majd feltölteni dinamikusan JavaScript segítségével -->
+                                </select><br>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-2 col-form-label"></label>
+                            <div class="col-7" >
+                                <button type="submit" class="btn btn-block btn-dark">Jelentkezés</button>
+                            </div>
+                        </div>
+                    </fieldset>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+
+<script>
+    document.getElementById("registration-form").addEventListener("submit", function (event) {
+      event.preventDefault();
+
+      var studentId = document.getElementById("student-id").value;
+      var studentName = document.getElementById("student-name").value;
+      var selectedExamId = document.getElementById("exam-selection").value;
+
+      fetch(`http://localhost:8080/exams/${selectedExamId}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            id: studentId,
+            name: studentName,
+            role: 'STUDENT',
+          }),
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Hiba történt a regisztráció során.');
+          }
+          // Sikeres regisztráció esetén felugró ablak megjelenítése
+          window.alert('Sikeres regisztráció!');
+
+          // További műveletek, pl. átirányítás vagy egyéb logika
+        })
+        .catch(error => console.error('Hiba történt:', error));
+    });
+
+    var apiUrl = 'http://localhost:8080/exams';
+
+    fetch(apiUrl)
+      .then(response => response.json())
+      .then(jsonData => {
+        var examSelection = document.getElementById("exam-selection");
+
+        jsonData.forEach(exam => {
+          var option = document.createElement("option");
+          option.value = exam.id;
+          option.text = `${exam.id} - ${exam.course} - ${exam.location} - ${exam.date}`;
+          examSelection.appendChild(option);
+        });
+      })
+      .catch(error => {
+        console.error('Hiba történt a fetch kérés során:', error);
+        alert('Hiba történt a regisztráció során. Ellenőrizd a konzolt további részletekért.');
+      });
+  </script>
 </body>
+
 </html>

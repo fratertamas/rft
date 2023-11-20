@@ -30,3 +30,4 @@ public class ExamController {
         examService.registerStudentForExam(examId, user);
     }
 }
+

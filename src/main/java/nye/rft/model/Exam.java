@@ -82,3 +82,4 @@ public class Exam {
         return Objects.hash(date, course, location, user, maxStudents);
     }
 }
+

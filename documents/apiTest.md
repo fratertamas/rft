@@ -31,6 +31,7 @@ A végpontokat felhasználva több esetet is lehet tisztelni, mivel vannak esem�
 * Vizsgák lekérdezése
 * Vizsga létrehozása tanárként
 * Vizsga létrehozása adminisztrátorként
+* Vizsga létrehozása diákként
 * Vizsgára történő jelentkezés diákként
 * Vizsgára történő jelentkezés nem diákként
 * Betelt létszámú vizsgára történő jelentkezés diákként
@@ -49,6 +50,9 @@ A vizsgákat bárki lekérdezheti.
 
 ### Vizsga létrehozása adminisztrátorként
 ![CreateExam](pictures/createexamadministrator.png)
+
+### Vizsga létrehozása diákként
+![CreateExam](pictures/createexamstudent.png)
 
 ### Vizsgára történő jelentkezés diákként
 ![RegisterStudent](pictures/registerstudent.png)

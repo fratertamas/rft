@@ -102,13 +102,11 @@
           }),
         })
         .then(response => {
-          if (!response.ok) {
-            throw new Error('Hiba történt a regisztráció során.');
+          if (response.ok ) {
+            window.alert('Sikeres regisztráció!');
+          }else {
+            window.alert('A tanuló nem tud regisztrálni a vizsgára');
           }
-          // Sikeres regisztráció esetén felugró ablak megjelenítése
-          window.alert('Sikeres regisztráció!');
-
-          // További műveletek, pl. átirányítás vagy egyéb logika
         })
         .catch(error => console.error('Hiba történt:', error));
     });

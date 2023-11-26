@@ -1,5 +1,6 @@
 package nye.rft.model;
 
+
 import java.util.Objects;
 
 public class User {
@@ -18,6 +19,7 @@ public class User {
         this.name = name;
         this.role = role;
     }
+
     public String getId() {
         return id;
     }
@@ -44,8 +46,12 @@ public class User {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj == null || getClass() != obj.getClass()) return false;
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
         User user = (User) obj;
         return Objects.equals(id, user.id) &&
                 Objects.equals(name, user.name) &&
@@ -66,4 +72,3 @@ public class User {
                 '}';
     }
 }
-

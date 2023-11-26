@@ -1,102 +1,135 @@
 package nye.rft.controller;
 
 
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import nye.rft.model.Exam;
 import nye.rft.model.User;
 import nye.rft.model.UserRole;
-import nye.rft.repository.ExamRepository;
 import nye.rft.service.ExamService;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.MockitoAnnotations;
-import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.mockito.Mockito;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import static org.mockito.BDDMockito.given;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.hamcrest.Matchers.*;
+import java.util.*;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-
+@WebMvcTest(ExamController.class)
 class ExamControllerTest {
 
-    private Calendar calendar = Calendar.getInstance();
     private static final String EXAM_ID = "exam1";
     private static final String TEACHER_ID = "teacher1";
     private static final String TEACHER_NAME = "Kovacs Aladar";
-    private static final String STUDENT_ID = "student1";
-    private static final String STUDENT_NAME = "Kovacs Adel";
     private static final String COURSE_NAME = "course1";
     private static final String LOCATION = "location1";
     private static final int MAX_STUDENT_NUMBER = 10;
-    private static Date EXAM_DATE;
+    private static final Date EXAM_DATE = new GregorianCalendar(2022, Calendar.APRIL, 3).getTime();
 
-    private AutoCloseable closeable;
 
-    @Mock
-    ExamService examService;
+    @Autowired
+    private MockMvc mockMvc;
 
-    @Mock
-    ExamRepository examRepository;
-    @InjectMocks
-    private ExamController underTest;
+    @MockBean
+    private ExamService examService;
 
-    @BeforeEach
-    public void setup() {
-        closeable = MockitoAnnotations.openMocks(this);
-        calendar.set(2022,04,03);
-        calendar.set(Calendar.MILLISECOND, 0);
-        EXAM_DATE = calendar.getTime();
-    }
-    @AfterEach
-    void tearDown()  {
-        try {
-            closeable.close();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
 
     @Test
-    void createExam() {
+    void createExam_ShouldReturnOk_WhenExamIsCreated() throws Exception {
         //Given
         User teacher = new User(TEACHER_ID,TEACHER_NAME, UserRole.TEACHER);
         Exam exam =new Exam(EXAM_ID,EXAM_DATE,COURSE_NAME,LOCATION,teacher,MAX_STUDENT_NUMBER);
-        //When
-        underTest.createExam(exam);
-        //Then
-        verify(examService, times(1)).createExam(exam);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String examJson = objectMapper.writeValueAsString(exam);
+
+        Mockito.when(examService.createExam(Mockito.any(Exam.class)))
+                .thenReturn("Exam successfully created.");
+
+        mockMvc.perform(post("/exams")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(examJson))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("successfully")));
     }
 
     @Test
-    void getAllExams() {
+    void createExam_ShouldReturnConflict_WhenExamAlreadyExists() throws Exception {
+        //Given
+        User teacher = new User(TEACHER_ID,TEACHER_NAME, UserRole.TEACHER);
+        Exam exam =new Exam(EXAM_ID,EXAM_DATE,COURSE_NAME,LOCATION,teacher,MAX_STUDENT_NUMBER);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String examJson = objectMapper.writeValueAsString(exam);
+
+        Mockito.when(examService.createExam(Mockito.any(Exam.class)))
+                .thenReturn("The exam already exists.");
+
+        mockMvc.perform(post("/exams")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(examJson))
+                .andExpect(status().isConflict())
+                .andExpect(content().string(containsString("already")));
+    }
+
+    @Test
+    void getAllExams_ShouldReturnAllTheStoredExams_WhenCalled() throws Exception {
         //Given
         User teacher = new User(TEACHER_ID,TEACHER_NAME, UserRole.TEACHER);
         Exam exam =new Exam(EXAM_ID,EXAM_DATE,COURSE_NAME,LOCATION,teacher,MAX_STUDENT_NUMBER);
         List<Exam> expected = List.of(exam);
         given(examService.getAllExams()).willReturn(expected);
-        //When
-        List<Exam> actual= underTest.getAllExams();
-        //Then
-        Assertions.assertEquals(expected,actual);
+        Mockito.when(examService.getAllExams()).thenReturn(expected);
+
+        // When & Then
+        mockMvc.perform(MockMvcRequestBuilders.get("/exams"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].id", is(EXAM_ID)));
     }
 
     @Test
-    void registerStudentForExam() {
-        //Given
-        User student = new User(STUDENT_ID,STUDENT_NAME, UserRole.STUDENT);
-        //When
-        underTest.registerStudentForExam(EXAM_ID,student);
-        //Then
-        verify(examService, times(1)).registerStudentForExam(EXAM_ID,student);
+    void registerStudentForExam_ShouldReturnOk_WhenRegistrationIsSuccessful() throws Exception {
+        // Given
+        String examId = "someExamId";
+        User student = new User("studentId", "Student Name", UserRole.STUDENT);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String userJson = objectMapper.writeValueAsString(student);
+
+        Mockito.when(examService.registerStudentForExam(examId, student))
+                .thenReturn("Student successfully registered.");
+
+        // When & Then
+        mockMvc.perform(post("/exams/{examId}", examId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(userJson))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("successfully")));
     }
+
+    @Test
+    void registerStudentForExam_ShouldReturnConflict_WhenRegistrationHasConflict() throws Exception {
+        // Given
+        String examId = "someExamId";
+        User student = new User("studentId", "Student Name", UserRole.STUDENT);
+        ObjectMapper objectMapper = new ObjectMapper();
+        String userJson = objectMapper.writeValueAsString(student);
+
+        Mockito.when(examService.registerStudentForExam(examId, student))
+                .thenReturn("The student cannot be registered.");
+
+        // When & Then
+        mockMvc.perform(post("/exams/{examId}", examId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(userJson))
+                .andExpect(status().isConflict())
+                .andExpect(content().string(containsString("cannot be registered")));
+    }
+
 }

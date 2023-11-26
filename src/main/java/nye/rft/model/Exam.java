@@ -1,5 +1,6 @@
 package nye.rft.model;
 
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -52,12 +53,16 @@ public class Exam {
         return registeredStudents;
     }
 
-    public void registerStudent(User user) {
+    public boolean registerStudent(User user) {
+
         if (user.getRole() == UserRole.STUDENT) {
-            if (registeredStudents.size() < maxStudents) {
+            if (registeredStudents.size() < maxStudents && !registeredStudents.stream()
+                    .anyMatch(c -> c.getId().compareTo(user.getId()) == 0)) {
                 registeredStudents.add(user);
+                return true;
             } else {
-                throw new IllegalStateException("The exam is full, no more students can register.");
+                return false;
+                //throw new IllegalStateException("The student could not be registered.");
             }
         } else {
             throw new IllegalArgumentException("Only students can register for the exam.");
@@ -66,8 +71,12 @@ public class Exam {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Exam exam = (Exam) o;
         return maxStudents  == exam.maxStudents  &&
                 Objects.equals(id, exam.id) &&
@@ -82,4 +91,3 @@ public class Exam {
         return Objects.hash(date, course, location, user, maxStudents);
     }
 }
-

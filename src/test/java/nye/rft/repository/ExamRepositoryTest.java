@@ -48,8 +48,9 @@ class ExamRepositoryTest {
             throw new RuntimeException(e);
         }
     }
+
     @Test
-    void saveExam() {
+    void saveExam_ShouldAddExamToTheExamRepository_WhenCalled() {
         //Given
         User teacher = new User(TEACHER_ID,TEACHER_NAME, UserRole.TEACHER);
         Exam exam =new Exam(EXAM_ID_FIRST,EXAM_DATE,COURSE_NAME,LOCATION,teacher,MAX_STUDENT_NUMBER);
@@ -60,7 +61,19 @@ class ExamRepositoryTest {
     }
 
     @Test
-    void getAllExams() {
+    void saveExam_ShouldRefuseToAddExamToTheExamRepository_WhenTheExamAlreadyExists() {
+        //Given
+        User teacher = new User(TEACHER_ID,TEACHER_NAME, UserRole.TEACHER);
+        Exam exam = new Exam(EXAM_ID_FIRST,EXAM_DATE,COURSE_NAME,LOCATION,teacher,MAX_STUDENT_NUMBER);
+        Exam examSame = new Exam(EXAM_ID_FIRST,EXAM_DATE,COURSE_NAME,LOCATION,teacher,MAX_STUDENT_NUMBER);
+        underTest.saveExam(exam);
+
+        //When & Then
+        assertFalse(underTest.saveExam(examSame));
+    }
+
+    @Test
+    void getAllExams_ShouldReturnAllTheExams_WhenCalled() {
         //Given
         User teacher = new User(TEACHER_ID,TEACHER_NAME, UserRole.TEACHER);
         Exam expected =new Exam(EXAM_ID_FIRST,EXAM_DATE,COURSE_NAME,LOCATION,teacher,MAX_STUDENT_NUMBER);
@@ -72,7 +85,7 @@ class ExamRepositoryTest {
     }
 
     @Test
-    void findExamById1() {
+    void findExamById_ShouldReturnTheExam_WhenTheExamIsAlreadyStored() {
         //Given
         User teacher = new User(TEACHER_ID,TEACHER_NAME, UserRole.TEACHER);
         Exam expected = new Exam(EXAM_ID_FIRST,EXAM_DATE,COURSE_NAME,LOCATION,teacher,MAX_STUDENT_NUMBER) ;
@@ -85,7 +98,7 @@ class ExamRepositoryTest {
     }
 
     @Test
-    void findExamById2() {
+    void findExamById_ShouldReturnNull_WhenTheExamIsNotYetStored() {
         //Given
         User teacher = new User(TEACHER_ID,TEACHER_NAME, UserRole.TEACHER);
         Exam exam = new Exam(EXAM_ID_FIRST,EXAM_DATE,COURSE_NAME,LOCATION,teacher,MAX_STUDENT_NUMBER) ;

@@ -1,12 +1,10 @@
 package nye.rft.service;
 
 
-
 import nye.rft.model.Exam;
 import nye.rft.model.User;
 import nye.rft.model.UserRole;
 import nye.rft.repository.ExamRepository;
-import nye.rft.service.ExamService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -22,12 +21,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.BDDMockito.given;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 
@@ -47,9 +42,10 @@ class ExamServiceTest {
     private AutoCloseable closeable;
 
     @Mock
-    private ExamRepository examRepository;
+    ExamRepository examRepository;
+
     @InjectMocks
-    private ExamService underTest;
+    ExamService underTest;
 
     @BeforeEach
     public void setup() {
@@ -57,6 +53,7 @@ class ExamServiceTest {
         calendar.set(2022,04,03);
         calendar.set(Calendar.MILLISECOND, 0);
         EXAM_DATE = calendar.getTime();
+        underTest = new ExamService(examRepository);
     }
 
     @AfterEach
@@ -68,30 +65,39 @@ class ExamServiceTest {
         }
     }
 
-    @Test
-    public void test() {
-        //Given
-        assertTrue(true);
-    }
-
 
     @Test
-    public void testCreateExam() {
+    public void createExam_ShouldReturnPositiveMessage_WhenTheExamCanBeAdd() {
         //Given
         User teacher = new User(TEACHER_ID,TEACHER_NAME, UserRole.TEACHER);
         Exam exam = new Exam(EXAM_ID,EXAM_DATE,COURSE_NAME,LOCATION,teacher,MAX_STUDENT_NUMBER);
-        //When
-        underTest.createExam(exam);
-        //Then
-        verify(examRepository, times(1)).saveExam(exam);
+        Mockito.when(examRepository.saveExam(Mockito.any(Exam.class))).thenReturn(true);
+        // When
+        String result = underTest.createExam(exam);
+
+        // Then
+        Assertions.assertEquals("Exam successfully created.", result);
     }
 
     @Test
-    void getAllExams() {
+    public void createExam_ShouldReturnNegativeMessage_WhenTheExamCannotBeAdd() {
+        //Given
+        User teacher = new User(TEACHER_ID,TEACHER_NAME, UserRole.TEACHER);
+        Exam exam = new Exam(EXAM_ID,EXAM_DATE,COURSE_NAME,LOCATION,teacher,MAX_STUDENT_NUMBER);
+        Mockito.when(examRepository.saveExam(Mockito.any(Exam.class))).thenReturn(false);
+        // When
+        String result = underTest.createExam(exam);
+        // Then
+        Assertions.assertEquals("The exam already exists.", result);
+    }
+
+
+    @Test
+    void getAllExams_ShouldReturnRegisteredExams_WhenCalled() {
         //Given
         User teacher = new User(TEACHER_ID,TEACHER_NAME, UserRole.TEACHER);
         List<Exam> expected= new ArrayList<>(List.of(new Exam(EXAM_ID,EXAM_DATE,COURSE_NAME,LOCATION,teacher,MAX_STUDENT_NUMBER))) ;
-        given(examRepository.getAllExams()).willReturn(expected);
+        Mockito.when(examRepository.getAllExams()).thenReturn(expected);
         //when(examRepository.getAllExams()).thenReturn(expected);
         //When
         List<Exam> actual = underTest.getAllExams();
@@ -100,25 +106,38 @@ class ExamServiceTest {
     }
 
     @Test
-    void registerStudentForExam1() {
-       //Given
+    void registerStudentForExam_ShouldAddTheStudentToTheExam_WhenTheExamExistsAndTheStudentNotAlreadyRegistered() {
+        //Given
         User teacher = new User(TEACHER_ID,TEACHER_NAME, UserRole.TEACHER);
         Exam exam= new Exam(EXAM_ID,EXAM_DATE,COURSE_NAME,LOCATION,teacher,MAX_STUDENT_NUMBER) ;
         User student = new User(STUDENT_ID,STUDENT_NAME, UserRole.STUDENT);
-        given(examRepository.findExamById(EXAM_ID)).willReturn(exam);
+        Mockito.when(examRepository.findExamById(EXAM_ID)).thenReturn(exam);
         //When
-        underTest.registerStudentForExam(EXAM_ID,student);
+        String actual = underTest.registerStudentForExam(EXAM_ID,student);
         //Then
-        assertTrue(exam.getRegisteredStudents().contains(student));
+        Assertions.assertEquals("Student successfully registered.", actual);
     }
 
+    @Test
+    void registerStudentForExam_ShouldNotAddTheStudentToTheExam_WhenTheExamExistsButTheStudentAlreadyRegistered() {
+        //Given
+        User teacher = new User(TEACHER_ID,TEACHER_NAME, UserRole.TEACHER);
+        Exam exam= new Exam(EXAM_ID,EXAM_DATE,COURSE_NAME,LOCATION,teacher,MAX_STUDENT_NUMBER) ;
+        User student = new User(STUDENT_ID,STUDENT_NAME, UserRole.STUDENT);
+        Mockito.when(examRepository.findExamById(EXAM_ID)).thenReturn(exam);
+        underTest.registerStudentForExam(EXAM_ID,student);
+        //When
+        String actual = underTest.registerStudentForExam(EXAM_ID,student);
+        //Then
+        Assertions.assertEquals("The student already registered.", actual);
+    }
 
     @Test
-    void registerStudentForExam2() {
+    void registerStudentForExam_ShouldThrowIllegalArgumentException_WhenTheExamDoesNotExist() {
         //Given
         Exam exam = null ;
         User student = new User(STUDENT_ID,STUDENT_NAME, UserRole.STUDENT);
-        given(examRepository.findExamById(EXAM_ID)).willReturn(exam);
+        Mockito.when(examRepository.findExamById(EXAM_ID)).thenReturn(exam);
         //When--Then
         assertThrows(IllegalArgumentException.class,() -> underTest.registerStudentForExam(EXAM_ID,student));
     }

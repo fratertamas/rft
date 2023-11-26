@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>RFT-Neptun-Create Exam</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+    <script src="js/jquery.min.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <link href="css/style.css" rel="stylesheet" />
+    <link href="css/menu.css" rel="stylesheet" />
+</head>
+<body>
+<script type="text/javascript">
+        const Http = new XMLHttpRequest();
+        const url='/exams';
+        Http.open("GET", url);
+        Http.send();
+
+        Http.onreadystatechange = (e) => {
+          console.log(Http.responseText)
+        }
+
+        function examReg(){
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", "/exams");
+            xhr.setRequestHeader("Content-Type", "application/json; charset=UTF-8")
+            const body = {};
+            body.id = document.getElementById('id').value;
+            body.date = document.getElementById('date').value;
+            body.course = document.getElementById('course').value;
+            body.location = document.getElementById('location').value;
+            body.user = {};
+            console.log('UserId: ' + document.getElementById('userId').value);
+            body.user.id = document.getElementById('userId').value;
+            body.user.name = document.getElementById('userName').value;
+            body.user.role = document.getElementById('userRole').value;
+            body.maxStudents = document.getElementById('maxStudents').value;
+
+            xhr.onload = () => {
+              if (xhr.readyState == 4 && xhr.status == 200) {
+                alert('Sikeres vizsga regisztráció!');
+                console.log(JSON.parse(xhr.responseText));
+              } else {
+                console.log('Error: '+ xhr.status);
+                alert('Hiba történt a vizsga regisztrálásakor: Error ' + xhr.status);
+              }
+            };
+            console.log('Hiba: ' + JSON.stringify(body));
+            xhr.send(JSON.stringify(body));
+
+
+        };
+    </script>
+
+    <div class="keret">
+        <!--Menü kezdete-->
+        <nav class="navigacio">
+            <ul>
+                <li>
+                    <a href="index.html">Kezdőlap</a>
+                </li>
+                <li>
+                    <a href="">Vizsgák</a>
+
+                    <ul class="almenu sub-menu">
+                        <li>
+                            <a href="exams.html">Megtekintés</a>
+                        </li>
+                        <li>
+                            <a href="createexam.html">Létrehozás</a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="utolso">
+                    <a href="registerstudent.html">Vizsgára jelentkezés</a>
+                </li>
+            </ul>
+        </nav>
+        <!--Menü vége-->
+    </div>
+    <div style="width: 80%; margin: auto;">
+        <h4 style="text-align: center;">Vizsga rögzítése</h4><br />
+
+        <table style="width:100%; margin: auto;">
+            <tr>
+                <td style="vertical-align: top; margin: auto;">
+                    <fieldset>
+                        <legend>Vizsga adatai:</legend>
+                        <div class="form-group row">
+                            <label for="id" class="col-4 col-form-label">Vizsga azonosító</label>
+                            <div class="col-7">
+                                <input id="id" name="id" placeholder="Vizsga azonosító" class="form-control here" type="text">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="course" class="col-4 col-form-label">Kurzus neve</label>
+                            <div class="col-7">
+                                <input id="course" name="id" placeholder="Kurzus neve" class="form-control here" type="text">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="date" class="col-4 col-form-label">Vizsga időpontja</label>
+                            <div class="col-4">
+                                <input id="date" name="date" class="form-control here" type="date">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="location" class="col-4 col-form-label">Vizsga helyszíne</label>
+                            <div class="col-7">
+                                <input id="location" name="location" placeholder="Vizsga helyszíne" class="form-control here" type="text">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="userId" class="col-4 col-form-label">Vizsga kiírójának azonosítója</label>
+                            <div class="col-7">
+                                <input id="userId" name="userId" placeholder="Vizsga kiírójának azonosítója" class="form-control here" type="text">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="userName" class="col-4 col-form-label">Vizsga kiírójának neve</label>
+                            <div class="col-7">
+                                <input id="userName" name="userName" placeholder="Vizsga kiírójának neve" class="form-control here" type="text">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="userRole" class="col-4 col-form-label">Kiíró szerepköre</label>
+                            <div class="col-7">
+                                <select id="userRole" name="userRole" class="custom-select">
+                                    <option value="TEACHER">TEACHER</option>
+                                    <option value="ADMINISTRATOR">ADMINISTRATOR</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="maxStudents" class="col-4 col-form-label">Vizsga létszáma</label>
+                            <div class="col-7">
+                                <input id="maxStudents" name="maxStudents" placeholder="Vizsga létszáma" class="form-control here" type="text">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="gomb" class="col-2 col-form-label"></label>
+                            <div class="col-7" >
+                                <button type="button" id="gomb" name="gomb" onclick="examReg()" class="btn btn-block btn-dark">Küldés</button>
+                            </div>
+                        </div>
+                    </fieldset>
+                </td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>

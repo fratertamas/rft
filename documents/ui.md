@@ -13,8 +13,8 @@ Az oldalon lehetőség van arra, hogy megtekinthessük a már regisztrált vizsg
 
 ### Vizsgák/Létrehozás (createexan.html)
 Adminisztrátorként és tanárként lehetőségünk van arra, hogy vizsgákat hozzunk létre. A létrehozáshoz ki kell tölteni a megadott mezőket a legördülő listáról kiválasztani a szerepkörünket és utána a **Küldés** feliratú gombra kattintani.
-![exams](pictures/ui03.png)
+![exams](pictures/ui01.png)
 
 ### Vizsgára jelentkezés (registerstudent.html)
 Diákként regisztrálhatunk a legördülő listában megjelenő vizsgák valamelyikére. Miután kitöltöttük a mezőket a jelentkezés gombra kattintást követően megtörténik a regisztráció a kiválasztott vizsgára.
-![registerstudent](pictures/ui04.png)
+![registerstudent](pictures/ui03.png)
